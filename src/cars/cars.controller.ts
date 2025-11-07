@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
@@ -6,12 +7,17 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
+import { CreateCarDto } from './dto/create-car.dto';
 
 @Controller('cars')
+@UsePipes(ValidationPipe)
 export class CarsController {
   constructor(
     private readonly carService: CarsService, // <-- Cambiado a 'carService' (camelCase)
@@ -23,20 +29,20 @@ export class CarsController {
   }
 
   @Get(':id')
-  getCarById(@Param('id') id: string) {
-    return this.carService.findOneById(id); // <-- Eliminado el '+' redundante
+  getCarById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.carService.findOneById(id);
   }
 
   @Post()
-  createCar(@Body() body: any) {
-    return {
-      ok: true,
-      method: 'POST',
-    };
+  createCar(@Body() createCardDto: CreateCarDto) {
+    return createCardDto;
   }
 
   @Patch(':id')
-  updateCar(@Body() body: any) {
+  updateCar(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() body: any )
+    {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return body;
   }
